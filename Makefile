@@ -152,6 +152,12 @@ omap3evm_config :	unconfig
 am3517evm_config :       unconfig
 	@./mkconfig $(@:_config=) arm omap3 am3517evm
 
+overo_config :	unconfig
+	@./mkconfig $(@:_config=) arm omap3 overo
+
+omap3beagle_config :    unconfig
+	@./mkconfig $(@:_config=) arm omap3 omap3beagle
+
 #########################################################################
 
 clean:
