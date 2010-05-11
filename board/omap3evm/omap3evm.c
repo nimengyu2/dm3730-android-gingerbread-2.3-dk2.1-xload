@@ -937,7 +937,8 @@ void s_init(void)
 	/*
 	 * WORKAROUND: To suuport both Micron and Hynix NAND/DDR parts
 	 */
-	nand_init();
+	if ((get_mem_type() == GPMC_NAND) || (get_mem_type() == MMC_NAND))
+		nand_init();
 	config_3430sdram_ddr();
 }
 
