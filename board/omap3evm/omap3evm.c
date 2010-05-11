@@ -56,6 +56,8 @@ struct dpll_per_36x_param {
 
 typedef struct dpll_param dpll_param;
 
+extern unsigned int is_ddr_166M;
+
 #define MAX_SIL_INDEX	3
 
 /* Following functions are exported from lowlevel_init.S */
@@ -313,8 +315,13 @@ void config_3430sdram_ddr(void)
 
 	/* set timing */
 	if (is_cpu_family() == CPU_OMAP36XX) {
-		__raw_writel(HYNIX_SDRC_ACTIM_CTRLA_0, SDRC_ACTIM_CTRLA_0);
-		__raw_writel(HYNIX_SDRC_ACTIM_CTRLB_0, SDRC_ACTIM_CTRLB_0);
+		if (is_ddr_166M) {
+			__raw_writel(MICRON_SDRC_ACTIM_CTRLA_0, SDRC_ACTIM_CTRLA_0);
+			__raw_writel(MICRON_SDRC_ACTIM_CTRLB_0, SDRC_ACTIM_CTRLB_0);
+		} else {
+			__raw_writel(HYNIX_SDRC_ACTIM_CTRLA_0, SDRC_ACTIM_CTRLA_0);
+			__raw_writel(HYNIX_SDRC_ACTIM_CTRLB_0, SDRC_ACTIM_CTRLB_0);
+		}
 
 	} else {
 		if ((get_mem_type() == GPMC_ONENAND) || (get_mem_type() == MMC_ONENAND)){
@@ -356,13 +363,20 @@ void config_3430sdram_ddr(void)
          (*(unsigned int*)0x6D000080) = 0x02584099;//from Micron
 
 	 if (is_cpu_family() == CPU_OMAP36XX) {
-		 /* SDRC_ACTIM_CTRLA0 register */
-		 (*(unsigned int*)0x6D00009c) = 0x92e1c4c6;// for 200M
-		 /* SDRC_ACTIM_CTRLB0 register */
-		 (*(unsigned int*)0x6D0000a0) = 0x0002111c;
+		 if (is_ddr_166M) {
+			 /* SDRC_ACTIM_CTRLA0 register */
+			 (*(unsigned int*)0x6D00009c) = 0xaa9db4c6;// for 166M
+			 /* SDRC_ACTIM_CTRLB0 register */
+			 (*(unsigned int*)0x6D0000a0) = 0x00011517;
+		 } else {
+			 /* SDRC_ACTIM_CTRLA0 register */
+			 (*(unsigned int*)0x6D00009c) = 0x92e1c4c6;// for 200M
+			 /* SDRC_ACTIM_CTRLB0 register */
+			 (*(unsigned int*)0x6D0000a0) = 0x0002111c;
+		 }
 	 } else {
 		 /* SDRC_ACTIM_CTRLA0 register */
-		 (*(unsigned int*)0x6D00009c) = 0xaa9db4c6;// for 166M from rkw
+		 (*(unsigned int*)0x6D00009c) = 0xaa9db4c6;// for 166M
 		 /* SDRC_ACTIM_CTRLB0 register */
 		 (*(unsigned int*)0x6D0000a0) = 0x00011517;
 	 }
@@ -920,6 +934,10 @@ void s_init(void)
 	delay(100);
 	prcm_init();
 	per_clocks_enable();
+	/*
+	 * WORKAROUND: To suuport both Micron and Hynix NAND/DDR parts
+	 */
+	nand_init();
 	config_3430sdram_ddr();
 }
 

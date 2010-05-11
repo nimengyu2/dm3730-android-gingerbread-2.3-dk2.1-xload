@@ -42,7 +42,8 @@
  */
 #define MT29F1G_MFR		0x2c  /* Micron */
 #define MT29F1G_ID		0xa1  /* x8, 1GiB */
-#define MT29F2G_ID      0xba  /* x16, 2GiB */
+#define MT29F2G_ID		0xba	/* x16, 2GiB */
+#define MT29F4G_ID		0xbc	/* x16, 4GiB */
 
 #define HYNIX4GiB_MFR		0xAD  /* Hynix */
 #define HYNIX4GiB_ID		0xBC  /* x16, 4GiB */
@@ -61,6 +62,7 @@
 #define ECC_SIZE		24
 #define ECC_STEPS		3
 
+unsigned int is_ddr_166M;
 /*******************************************************
  * Routine: delay
  * Description: spinning delay to use before udelay works
@@ -183,18 +185,30 @@ int nand_chip()
 
 	NAND_DISABLE_CE();
 
-	if (is_cpu_family() == CPU_OMAP36XX) {
-		return (mfr != HYNIX4GiB_MFR || id != HYNIX4GiB_ID);
-	} else {
-		if (get_cpu_rev() == CPU_3430_ES2)
-#if defined (CONFIG_OMAP34XX) || defined (CONFIG_OMAP3EVM)
-			return (mfr != MT29F1G_MFR || !(id == MT29F1G_ID || id == MT29F2G_ID));
-#elif defined (CONFIG_AM3517EVM) || defined (CONFIG_AM3517TEB)
-		return (mfr != MT29F1G_MFR && !(id == MT29F1G_ID || id == MT29F2G_ID));
-#endif
-		else
-			return (mfr != K9F1G08R0A_MFR || id != K9F1G08R0A_ID);
+	switch (mfr) {
+		/* Hynix NAND Part */
+		case HYNIX4GiB_MFR:
+			is_ddr_166M = 0;
+			if (is_cpu_family() == CPU_OMAP36XX)
+				return (id != HYNIX4GiB_ID);
+			break;
+		/* Micron NAND Part */
+		case MT29F1G_MFR:
+			is_ddr_166M = 1;
+			if ((is_cpu_family() == CPU_OMAP34XX) ||
+					(is_cpu_family() == CPU_AM35XX) ||
+					(is_cpu_family() == CPU_OMAP36XX))
+				return (!((id == MT29F1G_ID) ||
+						(id == MT29F2G_ID) ||
+						(id ==MT29F4G_ID)));
+			break;
+		case K9F1G08R0A_MFR:
+		default:
+			is_ddr_166M = 1;
+			break;
 	}
+
+	return (id != K9F1G08R0A_ID);
 }
 
 /* read a block data to buf
