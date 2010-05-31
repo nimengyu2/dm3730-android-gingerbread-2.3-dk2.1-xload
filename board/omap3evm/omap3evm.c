@@ -334,7 +334,7 @@ void config_3430sdram_ddr(void)
 		}
 	 }
 
-	__raw_writel(SDP_SDRC_RFR_CTRL, SDRC_RFR_CTRL);
+	__raw_writel(SDP_SDRC_RFR_CTRL, SDRC_RFR_CTRL_0);
 	__raw_writel(SDP_SDRC_POWER_POP, SDRC_POWER);
 
 	/* init sequence for mDDR/mSDR using manual commands (DDR is different) */
@@ -413,7 +413,7 @@ void config_3430sdram_ddr(void)
 	__raw_writel(MICRON_SDRC_ACTIM_CTRLA_0, SDRC_ACTIM_CTRLA_1);
 	__raw_writel(MICRON_SDRC_ACTIM_CTRLB_0, SDRC_ACTIM_CTRLB_1);
 
-	__raw_writel(SDP_SDRC_RFR_CTRL, SDRC_RFR_CTRL + SDRC_CS1_OSET);
+	__raw_writel(SDP_SDRC_RFR_CTRL, SDRC_RFR_CTRL_0 + SDRC_CS1_OSET);
 	/* init sequence for mDDR/mSDR using manual commands */
 	__raw_writel(CMD_NOP, SDRC_MANUAL_0 + SDRC_CS1_OSET);
 	delay(5000);   /* supposed to be 100us per design spec for mddr/msdr */

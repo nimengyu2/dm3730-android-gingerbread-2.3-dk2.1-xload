@@ -117,10 +117,6 @@ u32 get_sysboot_value(void)
  *************************************************************/
 u32 get_mem_type(void)
 {
-
-	if (beagle_revision() == REVISION_XM)
-		return GPMC_NONE;
-
 	u32   mem_type = get_sysboot_value();
 	switch (mem_type) {
 	case 0:
@@ -726,6 +722,26 @@ void per_clocks_enable(void)
 
 #endif
 
+       /* Turn on all 3 I2C clocks */
+       sr32(CM_FCLKEN1_CORE, 15, 3, 0x7);
+       sr32(CM_ICLKEN1_CORE, 15, 3, 0x7);      /* I2C1,2,3 = on */
+
+       /* Enable the ICLK for 32K Sync Timer as its used in udelay */
+       sr32(CM_ICLKEN_WKUP, 2, 1, 0x1);
+
+       sr32(CM_FCLKEN_IVA2, 0, 32, FCK_IVA2_ON);
+       sr32(CM_FCLKEN1_CORE, 0, 32, FCK_CORE1_ON);
+       sr32(CM_ICLKEN1_CORE, 0, 32, ICK_CORE1_ON);
+       sr32(CM_ICLKEN2_CORE, 0, 32, ICK_CORE2_ON);
+       sr32(CM_FCLKEN_WKUP, 0, 32, FCK_WKUP_ON);
+       sr32(CM_ICLKEN_WKUP, 0, 32, ICK_WKUP_ON);
+       sr32(CM_FCLKEN_DSS, 0, 32, FCK_DSS_ON);
+       sr32(CM_ICLKEN_DSS, 0, 32, ICK_DSS_ON);
+       sr32(CM_FCLKEN_CAM, 0, 32, FCK_CAM_ON);
+       sr32(CM_ICLKEN_CAM, 0, 32, ICK_CAM_ON);
+       sr32(CM_FCLKEN_PER, 0, 32, FCK_PER_ON);
+       sr32(CM_ICLKEN_PER, 0, 32, ICK_PER_ON);
+
 	/* Enable GPIO5 clocks for blinky LEDs */
 	sr32(CM_FCLKEN_PER, 16, 1, 0x1);	/* FCKen GPIO5 */
 	sr32(CM_ICLKEN_PER, 16, 1, 0x1);	/* ICKen GPIO5 */
@@ -841,6 +857,16 @@ void per_clocks_enable(void)
 	MUX_VAL(CP(DSS_DATA20),     (IEN  | PTD | DIS | M4)) /*GPIO_90*/\
 	MUX_VAL(CP(DSS_DATA21),     (IEN  | PTD | DIS | M4)) /*GPIO_91*/\
 	MUX_VAL(CP(CAM_WEN),        (IEN  | PTD | DIS | M4)) /*GPIO_167*/\
+	MUX_VAL(CP(MMC1_CLK),       (IDIS | PTU | EN  | M0)) /*MMC1_CLK*/\
+	MUX_VAL(CP(MMC1_CMD),       (IEN  | PTU | EN  | M0)) /*MMC1_CMD*/\
+	MUX_VAL(CP(MMC1_DAT0),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT0*/\
+	MUX_VAL(CP(MMC1_DAT1),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT1*/\
+	MUX_VAL(CP(MMC1_DAT2),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT2*/\
+	MUX_VAL(CP(MMC1_DAT3),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT3*/\
+	MUX_VAL(CP(MMC1_DAT4),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT4*/\
+	MUX_VAL(CP(MMC1_DAT5),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT5*/\
+	MUX_VAL(CP(MMC1_DAT6),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT6*/\
+	MUX_VAL(CP(MMC1_DAT7),      (IEN  | PTU | EN  | M0)) /*MMC1_DAT7*/\
 	MUX_VAL(CP(UART1_TX),       (IDIS | PTD | DIS | M0)) /*UART1_TX*/\
 	MUX_VAL(CP(UART1_RTS),      (IDIS | PTD | DIS | M4)) /*GPIO_149*/\
 	MUX_VAL(CP(UART1_CTS),      (IDIS | PTD | DIS | M4)) /*GPIO_150*/\

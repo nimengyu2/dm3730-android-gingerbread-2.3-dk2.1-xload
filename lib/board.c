@@ -73,34 +73,33 @@ void start_armboot (void)
 	misc_init_r();
 	buf =  (uchar*) CFG_LOADADDR;
 
-	if ((get_mem_type() == MMC_ONENAND) || (get_mem_type() == MMC_NAND)){
-#ifdef CFG_PRINTF
-		printf("Booting from mmc . . .\n");
-#endif
+	/* Always first try mmc without checking boot pins */
+#ifndef CONFIG_OMAP3_BEAGLE
+	if ((get_mem_type() == MMC_ONENAND) || (get_mem_type() == MMC_NAND))
+#endif	/* CONFIG_OMAP3_BEAGLE */
 		buf += mmc_boot(buf);
-	}
 
-	if (get_mem_type() == GPMC_ONENAND){
+	if (buf == (uchar *)CFG_LOADADDR) {
+		if (get_mem_type() == GPMC_NAND){
 #ifdef CFG_PRINTF
-		printf("Booting from onenand . . .\n");
+			printf("Booting from nand . . .\n");
 #endif
-		for (i = ONENAND_START_BLOCK; i < ONENAND_END_BLOCK; i++){
-			if (!onenand_read_block(buf, i))
-				buf += ONENAND_BLOCK_SIZE;
+			for (i = NAND_UBOOT_START; i < NAND_UBOOT_END; i+= NAND_BLOCK_SIZE){
+				if (!nand_read_block(buf, i))
+					buf += NAND_BLOCK_SIZE; /* advance buf ptr */
+			}
+		}
+
+		if (get_mem_type() == GPMC_ONENAND){
+#ifdef CFG_PRINTF
+			printf("Booting from onenand . . .\n");
+#endif
+			for (i = ONENAND_START_BLOCK; i < ONENAND_END_BLOCK; i++){
+				if (!onenand_read_block(buf, i))
+					buf += ONENAND_BLOCK_SIZE;
+			}
 		}
 	}
-
-	if (get_mem_type() == GPMC_NAND){
-#ifdef CFG_PRINTF
-		printf("Booting from nand . . .\n");
-#endif
-		for (i = NAND_UBOOT_START; i < NAND_UBOOT_END; i+= NAND_BLOCK_SIZE){
-			if (!nand_read_block(buf, i))
-				buf += NAND_BLOCK_SIZE; /* advance buf ptr */
-		}
-	}
-
-
 
 	if (buf == (uchar *)CFG_LOADADDR)
 		hang();
