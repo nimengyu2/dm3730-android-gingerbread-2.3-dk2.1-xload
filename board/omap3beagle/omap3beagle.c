@@ -955,7 +955,7 @@ int nand_init(void)
 #ifdef CFG_PRINTF
 			printf("Unsupported Chip!\n");
 #endif
-			return 1;
+			return 0;
 		}
 
 	}
