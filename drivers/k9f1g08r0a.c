@@ -103,6 +103,12 @@ static inline void delay (unsigned long loops)
 static int nand_read_page(u_char *buf, ulong page_addr);
 static int nand_read_oob(u_char * buf, ulong page_addr);
 
+#ifdef ECC_CHECK_ENABLE
+void omap_enable_hw_ecc(void);
+int omap_correct_data_hw_ecc(u_char *dat, u_char *read_ecc, u_char *calc_ecc);
+void omap_calculate_hw_ecc(const u_char *dat, u_char *ecc_code);
+#endif
+
 #ifdef ONE_BIT_ERROR_CORRECT
 /* This is the only SW ECC supported by u-boot. So to load u-boot
  * this should be supported */
@@ -311,7 +317,9 @@ static int nand_read_page(u_char *buf, ulong page_addr)
 #else
 	u_char *p;
 #endif
-
+#ifdef ECC_HW_ENABLE
+	omap_enable_hw_ecc();
+#endif
 	NAND_ENABLE_CE();
 	NanD_Command(NAND_CMD_READ0);
 	NanD_Address(ADDR_COLUMN_PAGE, page_addr);
@@ -364,9 +372,14 @@ static int nand_read_page(u_char *buf, ulong page_addr)
 		ecc_code[cntr] =  oob_buf[ecc_pos[cntr]];
 
 	for(count = 0; count < ECC_SIZE; count += ECC_STEPS) {
+#ifdef ECC_HW_ENABLE
+                omap_calculate_hw_ecc(buf, &ecc_calc[0]);
+		if (omap_correct_data_hw_ecc (buf, &ecc_code[count], &ecc_calc[0]) == -1) {
+#else
 #ifdef ONE_BIT_ERROR_CORRECT
 	        nand_calculate_ecc (buf, &ecc_calc[0]);
 		if (nand_correct_data (buf, &ecc_code[count], &ecc_calc[0]) == -1 ) {
+#endif
 #endif
 #ifdef FOUR_BIT_ERROR_CORRECT
 		if (omap_correct_data_bch4(buf, &ecc_code[count], &ecc_calc[0]) == -1) {
