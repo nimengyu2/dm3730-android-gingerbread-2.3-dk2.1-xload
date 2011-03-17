@@ -838,6 +838,24 @@ int nor_read_boot(unsigned char *buf)
 
 	return i;
 }
+static int gpmc_config_reset(void)
+{
+	/*
+	 * DEVICESIZE = 0x3 (reserved)
+	 * DEVICETYPE = 0x3 (reserved)
+	 *
+	 * Do not touch CS0 config registers, since ROM code would
+	 * have already configured it.
+	 */
+	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS1);
+	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS2);
+	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS3);
+	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS4);
+	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS5);
+	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS6);
+	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS7);
+
+}
 /**********************************************************
  * Routine: nand+_init
  * Description: Set up nand for nand and jffs2 commands
@@ -845,6 +863,18 @@ int nor_read_boot(unsigned char *buf)
 
 int nand_init(void)
 {
+	/*
+	 * Reset the CONFIG0 register, especially device_type field.
+	 * This is required to make decesions on interfaced flash devices
+	 * later in the boot process.
+	 *
+	 * kernel reads the DEVICETYPE field in detection of NOR or NAND flash
+	 * and the reset value of this field is 0, which is NOR. This creates
+	 * problem when you have NOR flash as a data flash connected to
+	 * different CS.
+	 */
+	gpmc_config_reset();
+
 	if (get_mem_type() != GPMC_NOR) {
 		/* global settings */
 		__raw_writel(0x10, GPMC_SYSCONFIG);	/* smart idle */
