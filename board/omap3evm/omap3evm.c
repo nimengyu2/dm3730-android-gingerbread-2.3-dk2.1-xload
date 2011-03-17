@@ -1166,6 +1166,11 @@ void set_muxconf_regs(void)
 	MUX_DEFAULT();
 }
 
+int nor_read_boot(unsigned char *buf)
+{
+	return 0;
+}
+
 /**********************************************************
  * Routine: nand+_init
  * Description: Set up nand for nand and jffs2 commands

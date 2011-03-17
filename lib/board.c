@@ -32,6 +32,7 @@
 
 #include <common.h>
 #include <asm/arch/mem.h>
+#include <asm/arch/sys_proto.h>
 
 extern int misc_init_r (void);
 extern u32 get_mem_type(void);
@@ -100,6 +101,20 @@ void start_armboot (void)
 			}
 		}
 	}
+
+#if defined (CONFIG_AM3517EVM)
+	/*
+	 * FIXME: Currently coping uboot image,
+	 * ideally we should leverage XIP feature here
+	 */
+	if (get_mem_type() == GPMC_NOR) {
+		int size;
+		printf("Booting from NOR Flash...\n");
+		size = nor_read_boot(buf);
+		if (size > 0)
+			buf += size;
+	}
+#endif
 
 	if (buf == (uchar *)CFG_LOADADDR)
 		hang();

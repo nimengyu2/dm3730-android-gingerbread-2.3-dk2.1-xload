@@ -3,7 +3,7 @@
  * Texas Instruments, <www.ti.com>
  * Jian Zhang <jzhang@ti.com>
  * Richard Woodruff <r-woodruff2@ti.com>
- * 
+ *
  * Modified for overo
  * Steve Sakoman <steve@sakoman.com>
  *
@@ -753,6 +753,11 @@ void per_clocks_enable(void)
 void set_muxconf_regs(void)
 {
 	MUX_DEFAULT();
+}
+
+int nor_read_boot(unsigned char *buf)
+{
+	return 0;
 }
 
 /**********************************************************

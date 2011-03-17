@@ -242,9 +242,9 @@ u32 get_osc_clk_speed(void)
 }
 
 /******************************************************************************
- * get_sys_clkin_sel() - returns the sys_clkin_sel field value based on 
+ * get_sys_clkin_sel() - returns the sys_clkin_sel field value based on
  *   -- input oscillator clock frequency.
- *   
+ *
  *****************************************************************************/
 void get_sys_clkin_sel(u32 osc_clk, u32 *sys_clkin_sel)
 {
@@ -292,8 +292,8 @@ void prcm_init(void)
 	/* The DPLL tables are defined according to sysclk value and
 	 * silicon revision. The clk_index value will be used to get
 	 * the values for that input sysclk from the DPLL param table
-	 * and sil_index will get the values for that SysClk for the 
-	 * appropriate silicon rev. 
+	 * and sil_index will get the values for that SysClk for the
+	 * appropriate silicon rev.
 	 */
 	if(cpu_is_3410())
 		sil_index = 2;
@@ -302,7 +302,7 @@ void prcm_init(void)
 			sil_index = 0;
 		else if(get_cpu_rev() == CPU_3430_ES2)
 			sil_index = 1;
-	}	
+	}
 
 	/* Unlock MPU DPLL (slows things down, and needed later) */
 	sr32(CM_CLKEN_PLL_MPU, 0, 3, PLL_LOW_POWER_BYPASS);
@@ -447,7 +447,7 @@ void s_init(void)
 {
 	watchdog_init();
 #ifdef CONFIG_3430_AS_3410
-	/* setup the scalability control register for 
+	/* setup the scalability control register for
 	 * 3430 to work in 3410 mode
 	 */
 	__raw_writel(0x5ABF,CONTROL_SCALABLE_OMAP_OCP);
@@ -687,6 +687,11 @@ void per_clocks_enable(void)
 void set_muxconf_regs(void)
 {
 	MUX_DEFAULT();
+}
+
+int nor_read_boot(unsigned char *buf)
+{
+	return 0;
 }
 
 /**********************************************************

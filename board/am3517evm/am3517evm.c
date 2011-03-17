@@ -188,22 +188,29 @@ u32 get_sysboot_value(void)
  *************************************************************/
 u32 get_mem_type(void)
 {
-        u32   mem_type = get_sysboot_value();
-        switch (mem_type){
+	u32 order = 0;
+        u32 mem_type = get_sysboot_value();
 
-            case 1:
-            case 12:
-            case 15:
-            case 21:
-            case 27:    return GPMC_NAND;
+	order = mem_type & BIT5;
+	mem_type &= ~BIT5;
+	switch (mem_type){
 
+	case 1:
+	case 12:
+	case 15:
+	case 21:
+	case 27:
+		return GPMC_NAND;
 
+	case 13:
+		if (order)
+			return MMC_NAND;
+		else
+			return GPMC_NOR;
 
-            case 13:
-            		return MMC_NAND;
-
-            default:    return GPMC_NAND;
-        }
+	default:
+		return GPMC_NAND;
+	}
 }
 
 /******************************************
@@ -786,6 +793,8 @@ void per_clocks_enable(void)
 	MUX_VAL(CP(SYS_BOOT6),      (IEN  | PTD | DIS | M4)) /*GPIO_8 */\
 	MUX_VAL(CP(SYS_CLKOUT2),    (IEN  | PTU | EN  | M4)) /*GPIO_186*/\
 	MUX_VAL(CP(JTAG_nTRST),     (IEN  | PTD | DIS | M0)) /*JTAG_nTRST*/\
+	MUX_VAL(CP(SYS_NRESWARM),   (IDIS | PTU | EN | M4)) /*SYS_nRESWARM */\
+								/* - GPIO30 */\
 	MUX_VAL(CP(JTAG_TCK),       (IEN  | PTD | DIS | M0)) /*JTAG_TCK*/\
 	MUX_VAL(CP(JTAG_TMS),       (IEN  | PTD | DIS | M0)) /*JTAG_TMS*/\
 	MUX_VAL(CP(JTAG_TDI),       (IEN  | PTD | DIS | M0)) /*JTAG_TDI*/\
@@ -814,6 +823,21 @@ void set_muxconf_regs(void)
 	MUX_DEFAULT();
 }
 
+/* Read Secondory boot-loader from NOR Flash */
+int nor_read_boot(unsigned char *buf)
+{
+	unsigned char *addr;
+	u32 i, temp;
+
+	temp = __raw_readl(GPMC_CONFIG7 + GPMC_CONFIG_CS0) & 0x3F;
+	addr = (unsigned char*) (temp << 24);
+	addr += NOR_UBOOT_START_OFF;
+
+	for (i = 0; i < NOR_UBOOT_SIZE; i++)
+		buf[i] = addr[i];
+
+	return i;
+}
 /**********************************************************
  * Routine: nand+_init
  * Description: Set up nand for nand and jffs2 commands
@@ -821,18 +845,20 @@ void set_muxconf_regs(void)
 
 int nand_init(void)
 {
-	/* global settings */
-	__raw_writel(0x10, GPMC_SYSCONFIG);	/* smart idle */
-	__raw_writel(0x0, GPMC_IRQENABLE);	/* isr's sources masked */
-	__raw_writel(0, GPMC_TIMEOUT_CONTROL);/* timeout disable */
+	if (get_mem_type() != GPMC_NOR) {
+		/* global settings */
+		__raw_writel(0x10, GPMC_SYSCONFIG);	/* smart idle */
+		__raw_writel(0x0, GPMC_IRQENABLE);	/* isr's sources masked */
+		__raw_writel(0, GPMC_TIMEOUT_CONTROL);/* timeout disable */
 
-	/* Set the GPMC Vals . For NAND boot on 3430SDP, NAND is mapped at CS0
-         *  , NOR at CS1 and MPDB at CS3. And oneNAND boot, we map oneNAND at CS0.
-	 *  We configure only GPMC CS0 with required values. Configiring other devices
-	 *  at other CS in done in u-boot anyway. So we don't have to bother doing it here.
-         */
-	__raw_writel(0 , GPMC_CONFIG7 + GPMC_CONFIG_CS0);
-	delay(1000);
+		/* Set the GPMC Vals . For NAND boot on 3430SDP, NAND is mapped at CS0
+		 *  , NOR at CS1 and MPDB at CS3. And oneNAND boot, we map oneNAND at CS0.
+		 *  We configure only GPMC CS0 with required values. Configiring other devices
+		 *  at other CS in done in u-boot anyway. So we don't have to bother doing it here.
+		 */
+		__raw_writel(0 , GPMC_CONFIG7 + GPMC_CONFIG_CS0);
+		delay(1000);
+	}
 
 	if ((get_mem_type() == GPMC_NAND) || (get_mem_type() == MMC_NAND)){
         	__raw_writel( M_NAND_GPMC_CONFIG1, GPMC_CONFIG1 + GPMC_CONFIG_CS0);
