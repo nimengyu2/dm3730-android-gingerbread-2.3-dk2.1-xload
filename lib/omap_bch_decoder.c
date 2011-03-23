@@ -384,7 +384,7 @@ int decode_bch(int select_4_8, unsigned char *ecc, unsigned int *err_loc)
 	 */
 
 	/* perform manual initialization to avoid memset */
-	for (i=0; i++; i<16) {
+	for (i=0; i<16; i++) {
 	  syn[i] = 0;
 	  if (i<8)
 	    err_poly[i] = 0;
@@ -406,4 +406,3 @@ int decode_bch(int select_4_8, unsigned char *ecc, unsigned int *err_loc)
 
 	return no_of_err;
 }
-EXPORT_SYMBOL(decode_bch);
