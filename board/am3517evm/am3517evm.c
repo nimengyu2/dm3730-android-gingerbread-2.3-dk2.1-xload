@@ -854,6 +854,7 @@ static int gpmc_config_reset(void)
 	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS5);
 	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS6);
 	__raw_writel( 0x00003c00, GPMC_CONFIG1 + GPMC_CONFIG_CS7);
+	return 0;
 
 }
 /**********************************************************
