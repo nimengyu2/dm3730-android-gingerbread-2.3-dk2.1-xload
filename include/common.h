@@ -99,7 +99,16 @@ int	serial_tstc   (void);
 
 /* lib/printf.c */
 void	serial_printf (const char *fmt, ...);
-#endif
+#else
+#define serial_init()
+#define serial_setbrg()
+#define serial_putc(ch)
+#define serial_puts(str)
+#define serial_getc()
+#define serial_tstc()
+
+#define serial_printf(fmt,args...)
+#endif /* CFG_PRINTF */
 
 /* lib/crc.c */
 void 	nand_calculate_ecc (const u_char *dat, u_char *ecc_code);
