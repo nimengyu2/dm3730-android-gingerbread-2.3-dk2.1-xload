@@ -376,16 +376,18 @@ static int nand_read_page(u_char *buf, ulong page_addr)
                 omap_calculate_hw_ecc(buf, &ecc_calc[0]);
 		if (omap_correct_data_hw_ecc (buf, &ecc_code[count], &ecc_calc[0]) == -1) {
 #else
+
 #ifdef ONE_BIT_ERROR_CORRECT
 	        nand_calculate_ecc (buf, &ecc_calc[0]);
 		if (nand_correct_data (buf, &ecc_code[count], &ecc_calc[0]) == -1 ) {
-#endif
 #endif
 #ifdef FOUR_BIT_ERROR_CORRECT
 		if (omap_correct_data_bch4(buf, &ecc_code[count], &ecc_calc[0]) == -1) {
 #endif
 #ifdef EIGHT_BIT_ERROR_CORRECT
                 if (omap_correct_data_bch8(buf, &ecc_code[count], &ecc_calc[0]) == -1) {
+#endif
+
 #endif
  			printf ("ECC Failed, page 0x%08x\n", page_addr);
 			for (val=0; val <256; val++)
