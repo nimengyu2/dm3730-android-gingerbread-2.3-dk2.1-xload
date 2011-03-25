@@ -62,12 +62,16 @@ extern unsigned int is_ddr_166M;
 
 /* Following functions are exported from lowlevel_init.S */
 extern dpll_param *get_mpu_dpll_param(void);
+#ifdef CONFIG_IVA
 extern dpll_param *get_iva_dpll_param(void);
+#endif
 extern dpll_param *get_core_dpll_param(void);
 extern dpll_param *get_per_dpll_param(void);
 
 extern dpll_param *get_36x_mpu_dpll_param(void);
+#ifdef CONFIG_IVA
 extern dpll_param *get_36x_iva_dpll_param(void);
+#endif
 extern dpll_param *get_36x_core_dpll_param(void);
 extern dpll_param *get_36x_per_dpll_param(void);
 
@@ -617,6 +621,7 @@ static void mpu_init_34xx(u32 sil_index, u32 clk_index)
 	sr32(CM_CLKEN_PLL_MPU, 4, 4, ptr->fsel);
 }
 
+#ifdef CONFIG_IVA
 static void iva_init_34xx(u32 sil_index, u32 clk_index)
 {
 	dpll_param *ptr;
@@ -649,6 +654,7 @@ static void iva_init_34xx(u32 sil_index, u32 clk_index)
 
 	wait_on_value(BIT0, 1, CM_IDLEST_PLL_IVA2, LDELAY);
 }
+#endif /* CONFIG_IVA */
 
 /*
  * OMAP3630 specific functions
@@ -765,6 +771,7 @@ static void mpu_init_36xx(u32 sil_index, u32 clk_index)
 	wait_on_value(BIT0, 1, CM_IDLEST_PLL_MPU, LDELAY);
 }
 
+#ifdef CONFIG_IVA
 static void iva_init_36xx(u32 sil_index, u32 clk_index)
 {
 	dpll_param *ptr;
@@ -794,7 +801,7 @@ static void iva_init_36xx(u32 sil_index, u32 clk_index)
 
 	wait_on_value(BIT0, 1, CM_IDLEST_PLL_IVA2, LDELAY);
 }
-
+#endif /* CONFIG_IVA */
 
 /******************************************************************************
  * prcm_init() - inits clocks for PRCM as defined in clocks.h
@@ -832,7 +839,9 @@ void prcm_init(void)
 		dpll3_init_36xx(0, clk_index);
 		dpll4_init_36xx(0, clk_index);
 		mpu_init_36xx(0, clk_index);
+#ifdef CONFIG_IVA
 		iva_init_36xx(0, clk_index);
+#endif
 	} else {
 		sil_index = get_cpu_rev() - 1;
 
@@ -849,7 +858,9 @@ void prcm_init(void)
 
 		dpll3_init_34xx(sil_index, clk_index);
 		dpll4_init_34xx(sil_index, clk_index);
+#ifdef CONFIG_IVA
 		iva_init_34xx(sil_index, clk_index);
+#endif
 		mpu_init_34xx(sil_index, clk_index);
 
 		/* Lock MPU DPLL to set frequency */

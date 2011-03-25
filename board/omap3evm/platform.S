@@ -263,6 +263,7 @@ get_mpu_dpll_param:
 	adr r0, mpu_dpll_param
 	mov pc, lr
 
+#ifdef CONFIG_IVA
 iva_dpll_param:
 /* 12MHz */
 /* ES1 */
@@ -329,6 +330,7 @@ iva_dpll_param:
 get_iva_dpll_param:
 	adr r0, iva_dpll_param
 	mov pc, lr
+#endif
 
 core_dpll_param:
 /* 12MHz */
@@ -444,11 +446,13 @@ mpu_36x_dpll_param:
 .word 300, 12, 0, 1
 .word 300, 12, 0, 1
 
+#ifdef CONFIG_IVA
 iva_36x_dpll_param:
 .word 10, 0, 0, 1
 .word 10, 0, 0, 1
 .word 10, 0, 0, 1
 .word 10, 0, 0, 1
+#endif
 
 core_36x_dpll_param:
 .word 200, 12, 0, 1
@@ -468,10 +472,12 @@ get_36x_mpu_dpll_param:
 	adr	r0, mpu_36x_dpll_param
 	mov	pc, lr
 
+#ifdef CONFIG_IVA
 .globl get_36x_iva_dpll_param
 get_36x_iva_dpll_param:
 	adr	r0, iva_36x_dpll_param
 	mov	pc, lr
+#endif
 
 .globl get_36x_core_dpll_param
 get_36x_core_dpll_param:
