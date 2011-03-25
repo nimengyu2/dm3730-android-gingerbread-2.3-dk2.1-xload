@@ -105,8 +105,8 @@ OBJDUMP = $(CROSS_COMPILE)objdump
 RANLIB	= $(CROSS_COMPILE)RANLIB
 
 RELFLAGS= $(PLATFORM_RELFLAGS)
-DBGFLAGS= -g # -DDEBUG
-OPTFLAGS= -Os #-fomit-frame-pointer
+DBGFLAGS=
+OPTFLAGS= -Os
 ifndef LDSCRIPT
 #LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/x-load.lds.debug
 LDSCRIPT := $(TOPDIR)/board/$(BOARDDIR)/x-load.lds
