@@ -946,10 +946,10 @@ int nand_init(void)
 }
 
 #ifdef ECC_HW_ENABLE
-void omap_enable_hw_ecc()
+void omap_enable_hw_ecc(void)
 {
     uint32_t val,dev_width = 0;
-        uint8_t cs;
+    uint8_t cs = 0;
 #ifdef NAND_16BIT
     dev_width = 1;
 #endif
