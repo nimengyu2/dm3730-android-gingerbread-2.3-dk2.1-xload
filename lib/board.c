@@ -40,7 +40,7 @@ extern u32 get_mem_type(void);
 #ifdef CFG_PRINTF
 int print_info(void)
 {
-	printf("\n\nTexas Instruments X-Loader 1.50 ("
+	printf("\n\nTexas Instruments X-Loader 1.51 ("
 			__DATE__ " - " __TIME__ ")\n");
 	return 0;
 }
