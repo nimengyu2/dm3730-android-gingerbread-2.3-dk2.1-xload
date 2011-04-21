@@ -100,6 +100,7 @@ static inline void delay (unsigned long loops)
 					  "bne 1b":"=r" (loops):"0" (loops));
 }
 
+#ifdef CFG_NAND
 static int nand_read_page(u_char *buf, ulong page_addr);
 static int nand_read_oob(u_char * buf, ulong page_addr);
 
@@ -142,6 +143,7 @@ static u_char ecc_pos[] =
    50, 51, 52, 53, 54, 55, 56, 
    57, 58, 59, 60, 61, 62, 63};
 #endif
+#endif /* CFG_NAND */
 
 static unsigned long chipsize = (256 << 20);
 
@@ -269,6 +271,7 @@ int nand_chip()
 	return (id != K9F1G08R0A_ID);
 }
 
+#ifdef CFG_NAND
 /* read a block data to buf
  * return 1 if the block is bad or ECC error can't be corrected for any page
  * return 0 on sucess
@@ -434,5 +437,6 @@ static int nand_read_oob(u_char *buf, ulong page_addr)
 
 	return 0;
 }
+#endif /* CFG_NAND */
 
 #endif

@@ -81,6 +81,7 @@ void start_armboot (void)
 		buf += mmc_boot(buf);
 
 	if (buf == (uchar *)CFG_LOADADDR) {
+#ifdef CFG_NAND
 		if (get_mem_type() == GPMC_NAND){
 #ifdef CFG_PRINTF
 			printf("Booting from nand . . .\n");
@@ -90,6 +91,7 @@ void start_armboot (void)
 					buf += NAND_BLOCK_SIZE; /* advance buf ptr */
 			}
 		}
+#endif /* CFG_NAND */
 
 		if (get_mem_type() == GPMC_ONENAND){
 #ifdef CFG_PRINTF
