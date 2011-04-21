@@ -350,7 +350,7 @@ void config_3430sdram_ddr(void)
 
 	/* init sequence for mDDR/mSDR using manual commands (DDR is different) */
 	__raw_writel(CMD_NOP, SDRC_MANUAL_0);
-	delay(5000);
+	delay(2000);
 	__raw_writel(CMD_PRECHARGE, SDRC_MANUAL_0);
 	__raw_writel(CMD_AUTOREFRESH, SDRC_MANUAL_0);
 	__raw_writel(CMD_AUTOREFRESH, SDRC_MANUAL_0);
@@ -360,7 +360,7 @@ void config_3430sdram_ddr(void)
 
 	/* set up dll */
 	__raw_writel(SDP_SDRC_DLLAB_CTRL, SDRC_DLLA_CTRL);
-	delay(0x2000);	/* give time to lock */
+	delay(2000);	/* give time to lock */
 #else
        /* reset sdrc controller */
          __raw_writel(SOFTRESET, SDRC_SYSCONFIG);
@@ -402,7 +402,7 @@ void config_3430sdram_ddr(void)
 
          /* SDRC_Manual command register */
          (*(unsigned int*)0x6D0000a8) = 0x00000000; // NOP command
-         delay(5000);
+         delay(2000);
          (*(unsigned int*)0x6D0000a8) = 0x00000001; // Precharge command
          (*(unsigned int*)0x6D0000a8) = 0x00000002; // Auto-refresh command
          (*(unsigned int*)0x6D0000a8) = 0x00000002; // Auto-refresh command
@@ -415,7 +415,7 @@ void config_3430sdram_ddr(void)
 
          /* SDRC DLLA control register */
          (*(unsigned int*)0x6D000060) = 0x0000A;
-         delay(0x20000); // some delay
+         delay(2000); // some delay
 
 #endif
 
@@ -429,7 +429,7 @@ void config_3430sdram_ddr(void)
 	__raw_writel(SDP_SDRC_RFR_CTRL, SDRC_RFR_CTRL_0 + SDRC_CS1_OSET);
 	/* init sequence for mDDR/mSDR using manual commands */
 	__raw_writel(CMD_NOP, SDRC_MANUAL_0 + SDRC_CS1_OSET);
-	delay(5000);   /* supposed to be 100us per design spec for mddr/msdr */
+	delay(2000);	/* supposed to be 100us per design spec for mddr/msdr */
 	__raw_writel(CMD_PRECHARGE, SDRC_MANUAL_0 + SDRC_CS1_OSET);
 	__raw_writel(CMD_AUTOREFRESH, SDRC_MANUAL_0 + SDRC_CS1_OSET);
 	__raw_writel(CMD_AUTOREFRESH, SDRC_MANUAL_0 + SDRC_CS1_OSET);
@@ -879,7 +879,7 @@ void prcm_init(void)
  	sr32(CM_CLKSEL_PER, 0, 8, 0xff);
 	sr32(CM_CLKSEL_WKUP, 0, 1, 1);
 
-	delay(5000);
+	delay(500);
 }
 
 /*****************************************
@@ -1034,7 +1034,7 @@ void per_clocks_enable(void)
 	sr32(CM_FCLKEN1_CORE, 24, 1, 0x1);
 	sr32(CM_ICLKEN1_CORE, 24, 1, 0x1);
 #endif
-	delay(1000);
+	delay(500);
 }
 
 /* Set MUX for UART, GPMC, SDRC, GPIO */
