@@ -129,6 +129,7 @@ onenand_chip()
 	}
 }
 
+#ifdef CFG_ONENAND
 /* read a page with ECC */
 static inline int onenand_read_page(ulong block, ulong page, u_char *buf)
 {
@@ -234,4 +235,4 @@ int onenand_read_block(unsigned char *buf, ulong block)
 
 	return 0;
 }
-
+#endif /* CFG_ONENAND */

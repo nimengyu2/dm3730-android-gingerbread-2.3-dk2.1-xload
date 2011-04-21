@@ -93,6 +93,7 @@ void start_armboot (void)
 		}
 #endif /* CFG_NAND */
 
+#ifdef CFG_ONENAND
 		if (get_mem_type() == GPMC_ONENAND){
 #ifdef CFG_PRINTF
 			printf("Booting from onenand . . .\n");
@@ -102,6 +103,7 @@ void start_armboot (void)
 					buf += ONENAND_BLOCK_SIZE;
 			}
 		}
+#endif /* CFG_ONENAND */
 	}
 
 #if defined (CONFIG_AM3517EVM)

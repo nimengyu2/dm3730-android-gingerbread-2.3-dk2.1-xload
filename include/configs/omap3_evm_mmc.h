@@ -119,6 +119,7 @@
  */
 #define NAND_BASE_ADR		NAND_BASE
 #define ONENAND_BASE		ONENAND_MAP
+#define ONENAND_ADDR		ONENAND_BASE
 
 /*
  * Define macros for read/write to/from the NAND chip
