@@ -121,7 +121,7 @@
  * Board NAND Info.
  */
 
-
+#define CFG_NAND
 #define CFG_NAND_K9F1G08R0A
 #define NAND_16BIT
 

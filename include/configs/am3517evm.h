@@ -120,6 +120,7 @@
 #define NOR_UBOOT_SIZE		0x000A0000 /* Giving a space of 5 blocks = 640KB */
 
 /* NAND Device Configuration */
+#define CFG_NAND
 #define CFG_NAND_K9F1G08R0A    /* Samsung 8-bit 128MB chip large page NAND chip*/
 #define NAND_16BIT
 #define ECC_HW_ENABLE

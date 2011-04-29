@@ -125,7 +125,7 @@
  * Board NAND Info.
  */
 
-
+#define CFG_NAND
 #define CFG_NAND_K9F1G08R0A    /* Samsung 8-bit 128MB chip large page NAND chip*/
 #define NAND_16BIT
 #define ECC_HW_ENABLE
