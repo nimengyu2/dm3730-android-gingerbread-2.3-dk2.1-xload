@@ -148,7 +148,9 @@ u32 get_mem_type(void)
 
             case 1:
             case 12:
+#ifndef CONFIG_FLASHBOARD /* FLASH Board, just boot from MMC for now */
             case 15:
+#endif
             case 21:
             case 27:    return GPMC_NAND;
 
@@ -161,6 +163,9 @@ u32 get_mem_type(void)
             case 20:
             case 26:    return GPMC_MDOC;
 
+#ifdef CONFIG_FLASHBOARD /* FLASH Board, just boot from MMC for now */
+            case 15:
+#endif
             case 17:
             case 18:
             case 24:	return MMC_NAND;
@@ -362,16 +367,21 @@ void config_3430sdram_ddr(void)
 	__raw_writel(SDP_SDRC_DLLAB_CTRL, SDRC_DLLA_CTRL);
 	delay(2000);	/* give time to lock */
 #else
-       /* reset sdrc controller */
-         __raw_writel(SOFTRESET, SDRC_SYSCONFIG);
-         wait_on_value(BIT0, BIT0, SDRC_STATUS, 12000000);
-         __raw_writel(0, SDRC_SYSCONFIG);
+	/* reset sdrc controller */
+	__raw_writel(SOFTRESET, SDRC_SYSCONFIG);
+	wait_on_value(BIT0, BIT0, SDRC_STATUS, 12000000);
+	__raw_writel(0, SDRC_SYSCONFIG);
 
-         /* setup sdrc to ball mux */
-         __raw_writel(SDP_SDRC_SHARING, SDRC_SHARING);
+	/* setup sdrc to ball mux */
+	__raw_writel(SDP_SDRC_SHARING, SDRC_SHARING);
 
-         /* SDRC_MCFG0 register */
-         (*(unsigned int*)0x6D000080) = 0x02584099;//from Micron
+	/* SDRC_MCFG0 register */
+#ifdef CONFIG_FLASHBOARD
+	/* set 256MB for SAMSUNG K4X1G163PE-FCG6 */
+	__raw_writel(SDP_SDRC_MDCFG_0_DDR, SDRC_MCFG_0);
+#else
+	(*(unsigned int *)0x6D000080) = 0x02584099; /* from Micron */
+#endif
 
 	 if (is_cpu_family() == CPU_OMAP36XX) {
 		 if (is_ddr_166M) {
@@ -422,7 +432,11 @@ void config_3430sdram_ddr(void)
 #ifdef CONFIG_DDR_256MB_STACKED
 	make_cs1_contiguous();
 
+#ifdef CONFIG_FLASHBOARD
+	__raw_writel(SDP_SDRC_MDCFG_1_DDR, SDRC_MCFG_0 + SDRC_CS1_OSET);
+#else
 	__raw_writel(SDP_SDRC_MDCFG_0_DDR, SDRC_MCFG_0 + SDRC_CS1_OSET);
+#endif
 	__raw_writel(MICRON_SDRC_ACTIM_CTRLA_0, SDRC_ACTIM_CTRLA_1);
 	__raw_writel(MICRON_SDRC_ACTIM_CTRLB_0, SDRC_ACTIM_CTRLB_1);
 
@@ -1143,8 +1157,8 @@ void per_clocks_enable(void)
 	MUX_VAL(CP(CAM_WEN),        (IEN  | PTD | DIS | M4)) /*GPIO_167*/\
 	MUX_VAL(CP(UART1_TX),       (IDIS | PTD | DIS | M0)) /*UART1_TX*/\
 	MUX_VAL(CP(UART1_RTS),      (IDIS | PTD | DIS | M0)) /*UART1_RTS*/\
-	MUX_VAL(CP(UART1_CTS),      (IEN | PTU | DIS | M0)) /*UART1_CTS*/\
-	MUX_VAL(CP(UART1_RX),       (IEN | PTD | DIS | M0)) /*UART1_RX*/\
+	MUX_VAL(CP(UART1_CTS),      (IEN  | PTU | DIS | M0)) /*UART1_CTS*/\
+	MUX_VAL(CP(UART1_RX),       (IEN  | PTD | DIS | M0)) /*UART1_RX*/\
 	MUX_VAL(CP(McBSP1_DX),      (IEN  | PTD | DIS | M4)) /*GPIO_158*/\
 	MUX_VAL(CP(SYS_32K),        (IEN  | PTD | DIS | M0)) /*SYS_32K*/\
 	MUX_VAL(CP(SYS_BOOT0),      (IEN  | PTD | DIS | M4)) /*GPIO_2 */\

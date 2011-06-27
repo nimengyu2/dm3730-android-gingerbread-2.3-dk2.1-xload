@@ -56,6 +56,12 @@ else
 	> config.h		# Create new config file
 fi
 echo "/* Automatically generated - do not edit */" >>config.h
+if [ "$1" = "flashboard" ]
+then
+echo "#define CONFIG_FLASHBOARD 1"  >>config.h
+echo "#include <configs/omap3evm.h>" >>config.h
+else
 echo "#include <configs/$1.h>" >>config.h
+fi
 
 exit 0

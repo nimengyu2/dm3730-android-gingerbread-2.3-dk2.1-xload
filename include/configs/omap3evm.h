@@ -94,13 +94,22 @@
 #define CFG_NS16550_SERIAL
 #define CFG_NS16550_REG_SIZE     (-4)
 #define CFG_NS16550_CLK          (48000000)
+#ifdef CONFIG_FLASHBOARD
+#define CFG_NS16550_COM3         OMAP34XX_UART3
+#else
 #define CFG_NS16550_COM1         OMAP34XX_UART1
+#endif
 
 /*
  * select serial console configuration
  */
+#ifdef CONFIG_FLASHBOARD
+#define CONFIG_SERIAL3           3    /* UART3 on Flash Board */
+#define CONFIG_CONS_INDEX        3
+#else
 #define CONFIG_SERIAL1           1    /* UART1 on OMAP3EVM */
 #define CONFIG_CONS_INDEX        1
+#endif
 
 #define CONFIG_BAUDRATE          115200
 #define CFG_PBSIZE               256
@@ -127,7 +136,11 @@
 
 #define CFG_NAND
 #define CFG_NAND_K9F1G08R0A    /* Samsung 8-bit 128MB chip large page NAND chip*/
+#ifdef CONFIG_FLASHBOARD
+#define NAND_8BIT
+#else
 #define NAND_16BIT
+#endif
 #define ECC_HW_ENABLE
 
 /* NAND is partitioned:

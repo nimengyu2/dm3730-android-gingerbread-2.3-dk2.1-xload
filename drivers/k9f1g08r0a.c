@@ -42,11 +42,16 @@
 #define MT29F1G_MFR		0x2c  /* Micron */
 #define MT29F1G_ID		0xa1  /* x8, 1GiB */
 
-#define MT29F2G_ID		0xba	/* x16, 2GiB */
-#define MT29F4G_ID		0xbc	/* x16, 4GiB */
+#define MT29F2G_ID		0xba  /* x16, 2GiB */
+#define MT29F4G_ID		0xbc  /* x16, 4GiB */
 
 #define HYNIX4GiB_MFR		0xAD  /* Hynix */
 #define HYNIX4GiB_ID		0xBC  /* x16, 4GiB */
+
+#ifdef CONFIG_FLASHBOARD
+#define SAMSUNG_MFR		0xEC  /* Samsung */
+#define K9F4G08U0B_ID		0xDC  /* x8, 512MiB */
+#endif
 
 #define ADDR_COLUMN		1
 #define ADDR_PAGE		2
@@ -262,7 +267,15 @@ int nand_chip()
 						(id == MT29F2G_ID) ||
 						(id ==MT29F4G_ID)));
 			break;
+#ifdef CONFIG_FLASHBOARD
+		case SAMSUNG_MFR: /* Samsung NAND on FLASH Board */
+			is_ddr_166M = 1;  /* set ddr to 166MHz */
+			if (is_cpu_family() == CPU_OMAP36XX)
+				return (id != K9F4G08U0B_ID);
+			break;
+#else
 		case K9F1G08R0A_MFR:
+#endif
 		default:
 			is_ddr_166M = 1;
 			break;

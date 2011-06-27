@@ -70,8 +70,19 @@ typedef enum {
 #ifdef CONFIG_3430ZEBU
 #define SDP_SDRC_MDCFG_0_DDR	(0x02582019|B_ALL) /* Infin ddr module */
 #else
+#ifdef CONFIG_FLASHBOARD
+/* RASWidth | CASWidth | AddrLegacy | RamSize | BankAloc | B32Not16 | DeepPD |
+   DDRType | RamType */
+#define SDP_SDRC_MDCFG_0_DDR   ((3 << 24) | (5 << 20) | (1 << 19) |           \
+				(128 << 8) | (0 << 6) | (1 << 4) | (1 << 3) | \
+				(0 << 2) | (1 << 0) | B_ALL)
+#define SDP_SDRC_MDCFG_1_DDR   ((3 << 24) | (5 << 20) | (1 << 19) |           \
+				(0 << 8) | (2 << 6) | (1 << 4) | (1 << 3) |   \
+				(0 << 2) | (1 << 0) | B_ALL)
+#else
 #define SDP_SDRC_MDCFG_0_DDR	(0x02584019|B_ALL)
 #define SDP_SDRC_MDCFG_0_DDR_XM	(0x03588019|B_ALL)
+#endif /* #ifdef CONFIG_FLASHBOARD */
 #endif
 
 #define SDP_SDRC_MR_0_DDR		0x00000032
