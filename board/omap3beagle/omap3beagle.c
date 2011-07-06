@@ -48,6 +48,7 @@
 #define REVISION_CX		0x6
 #define REVISION_C4		0x5
 #define REVISION_XM		0x0
+#define REVISION_XMC		0x2
 
 /* Used to index into DPLL parameter tables */
 struct dpll_param {
@@ -322,7 +323,7 @@ void config_3430sdram_ddr(void)
 	/* setup sdrc to ball mux */
 	__raw_writel(SDP_SDRC_SHARING, SDRC_SHARING);
 
-	if (beagle_revision() == REVISION_XM) {
+	if ((beagle_revision() == REVISION_XM) || (beagle_revision() == REVISION_XMC)) {
 		__raw_writel(0x2, SDRC_CS_CFG); /* 256MB/bank */
 		__raw_writel(SDP_SDRC_MDCFG_0_DDR_XM, SDRC_MCFG_0);
 		__raw_writel(SDP_SDRC_MDCFG_0_DDR_XM, SDRC_MCFG_1);
@@ -893,6 +894,9 @@ int misc_init_r(void)
 		break;
 	case REVISION_XM:
 		printf("Beagle xM Rev A\n");
+		break;
+        case REVISION_XMC:
+		printf("Beagle xM Rev C\n");
 		break;
 	default:
 		printf("Beagle unknown 0x%02x\n", rev);
