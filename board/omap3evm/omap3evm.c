@@ -60,13 +60,6 @@ extern unsigned int is_ddr_166M;
 
 #define MAX_SIL_INDEX	3
 
-/*
- * The function nand_init() is currently called twice.
- * This flag ensures that initilization steps are not repeated.
- */
-static int nand_initialized = 0;
-
-
 /* Following functions are exported from lowlevel_init.S */
 extern dpll_param *get_mpu_dpll_param(void);
 #ifdef CONFIG_IVA
@@ -1209,9 +1202,6 @@ int nor_read_boot(unsigned char *buf)
  *********************************************************/
 int nand_init(void)
 {
-	if (nand_initialized)
-		return 0;
-
 	/* global settings */
 	__raw_writel(0x10, GPMC_SYSCONFIG);	/* smart idle */
 	__raw_writel(0x0, GPMC_IRQENABLE);	/* isr's sources masked */
@@ -1274,9 +1264,6 @@ int nand_init(void)
         		return 1;
         	}
 	}
-
-	nand_initialized = 1;
-
 	return 0;
 }
 
