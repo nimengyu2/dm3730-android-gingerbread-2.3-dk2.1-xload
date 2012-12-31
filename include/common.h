@@ -27,6 +27,9 @@
 #ifndef __COMMON_H_
 #define __COMMON_H_	1
 
+#define LSD_DEBUG 
+//#undef LSD_DEBUG
+
 #undef	_LINUX_CONFIG_H
 #define _LINUX_CONFIG_H 1	/* avoid reading Linux autoconf.h file	*/
 
@@ -99,7 +102,15 @@ int	serial_tstc   (void);
 
 /* lib/printf.c */
 void	serial_printf (const char *fmt, ...);
+
+
 void lsd_xload_dbg(const char *fmt, ...);
+#ifdef	LSD_DEBUG 
+#define lsd_printf_dbg(fmt,args...)	serial_printf (fmt ,##args)
+#else
+#define lsd_printf_dbg(fmt,args...)
+#endif	
+
 #else
 #define serial_init()
 #define serial_setbrg()

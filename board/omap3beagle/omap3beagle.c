@@ -91,7 +91,7 @@ extern block_dev_desc_t *mmc_get_dev(int dev);
 #define __raw_readw(a)		(*(volatile unsigned short *)(a))
 #define __raw_writew(v, a)	(*(volatile unsigned short *)(a) = (v))
 
-
+extern char lsd_printbuffer[];
 #if 0
 char lsd_printbuffer[256]={"first string\n"};
 unsigned char* plsd_printbuffer = lsd_printbuffer;
@@ -765,9 +765,9 @@ void printf_info(void)
 	u32 osc_clk=0, sys_clkin_sel;
 	u32 clk_index, sil_index;
 	osc_clk = get_osc_clk_speed();
-	printf("[LSD DEBUG]osc_clk = get_osc_clk_speed()=%d\n",osc_clk);
+	lsd_printf_dbg("[LSD DEBUG]osc_clk = get_osc_clk_speed()=%d\n",osc_clk);
 	get_sys_clkin_sel(osc_clk, &sys_clkin_sel);
-	printf("[LSD DEBUG]sys_clkin_sel=%d\n",sys_clkin_sel);
+	lsd_printf_dbg("[LSD DEBUG]sys_clkin_sel=%d\n",sys_clkin_sel);
 
 	if((is_cpu_family() != CPU_OMAP36XX) && (sys_clkin_sel > 2)) {
 		//sr32(PRM_CLKSRC_CTRL, 6, 2, 2);/* input clock divider */
@@ -776,7 +776,7 @@ void printf_info(void)
 		//sr32(PRM_CLKSRC_CTRL, 6, 2, 1);/* input clock divider */
 		clk_index = sys_clkin_sel;
 	}
-	printf("[LSD DEBUG]clk_index =%d\n",clk_index);
+	lsd_printf_dbg("[LSD DEBUG]clk_index =%d\n",clk_index);
 
 
 	dpll_param *ptr;
@@ -786,17 +786,17 @@ void printf_info(void)
 
 	/* Moving it to the right sysclk and ES rev base */
 	ptr = ptr + (2*3) + 0;
-	printf("[LSD DEBUG]ptr->m2=%d\n",ptr->m2);
-	printf("[LSD DEBUG]ptr->m=%d\n",ptr->m);
-	printf("[LSD DEBUG]ptr->n=%d\n",ptr->n);
+	lsd_printf_dbg("[LSD DEBUG]ptr->m2=%d\n",ptr->m2);
+	lsd_printf_dbg("[LSD DEBUG]ptr->m=%d\n",ptr->m);
+	lsd_printf_dbg("[LSD DEBUG]ptr->n=%d\n",ptr->n);
 
 	u32 reg_tmp;
 	reg_tmp = __raw_readl(CM_CLKSEL2_PLL_MPU);
-	printf("[LSD DEBUG]reg CM_CLKSEL2_PLL_MPU=0x%08x\n",reg_tmp);
+	lsd_printf_dbg("[LSD DEBUG]reg CM_CLKSEL2_PLL_MPU=0x%08x\n",reg_tmp);
 	reg_tmp = __raw_readl(CM_CLKSEL1_PLL_MPU);
-	printf("[LSD DEBUG]reg CM_CLKSEL1_PLL_MPU=0x%08x\n",reg_tmp);
+	lsd_printf_dbg("[LSD DEBUG]reg CM_CLKSEL1_PLL_MPU=0x%08x\n",reg_tmp);
 	reg_tmp = __raw_readl(CM_CLKEN_PLL_MPU);
-	printf("[LSD DEBUG]reg CM_CLKEN_PLL_MPU=0x%08x\n",reg_tmp);
+	lsd_printf_dbg("[LSD DEBUG]reg CM_CLKEN_PLL_MPU=0x%08x\n",reg_tmp);
 }
 
 /******************************************************************************
@@ -947,7 +947,7 @@ void s_init(void)
  * Routine: misc_init_r
  * Description: Init ethernet (done here so udelay works)
  ********************************************************/
-extern char lsd_printbuffer[256];
+
 int misc_init_r(void)
 {
 	int rev;
@@ -956,9 +956,9 @@ int misc_init_r(void)
 	lsd_xload_dbg("test xload4\n");
 	lsd_xload_dbg("test rev=%d\n",100);
 	//lsd_xload_dbg_flush();
-	printf("%s\n",lsd_printbuffer);
+	printf("%s",lsd_printbuffer);
 
-	printf("[LSD DEBUG]yuge beagle\n");
+	lsd_printf_dbg("[LSD DEBUG]yuge beagle\n");
 	rev = beagle_revision();
 	switch (rev) {
 	case REVISION_AXBX:
@@ -981,19 +981,19 @@ int misc_init_r(void)
 	}
 
 	tmp = is_cpu_family();
-	printf("[LSD DEBUG]is_cpu_family()=0x%08x\n",tmp);
+	lsd_printf_dbg("[LSD DEBUG]is_cpu_family()=0x%08x\n",tmp);
 	switch (tmp) {
 	case CPU_OMAP34XX:
-		printf("[LSD DEBUG]cpu_family is CPU_OMAP34XX\n");
+		lsd_printf_dbg("[LSD DEBUG]cpu_family is CPU_OMAP34XX\n");
 		break;
 	case CPU_AM35XX:
-		printf("[LSD DEBUG]cpu_family is CPU_AM35XX\n");
+		lsd_printf_dbg("[LSD DEBUG]cpu_family is CPU_AM35XX\n");
 		break;
 	case CPU_OMAP36XX:
-		printf("[LSD DEBUG]cpu_family is CPU_OMAP36XX\n");
+		lsd_printf_dbg("[LSD DEBUG]cpu_family is CPU_OMAP36XX\n");
 		break;
 	default:
-		printf("[LSD DEBUG]is_cpu_family() unknown 0x%02x\n", tmp);
+		lsd_printf_dbg("[LSD DEBUG]is_cpu_family() unknown 0x%02x\n", tmp);
 	}
 
 	printf_info();

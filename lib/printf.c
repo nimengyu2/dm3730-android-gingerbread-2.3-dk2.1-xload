@@ -286,8 +286,9 @@ static int vsprintf(char *buf, const char *fmt, va_list args)
 
 
 #if 1
-char lsd_printbuffer[256]={"first string\n"};
+char lsd_printbuffer[1024]={"This means no debug info\n"};
 unsigned char* plsd_printbuffer = lsd_printbuffer;
+#ifdef LSD_DEBUG
 void lsd_xload_dbg(const char *fmt, ...)
 {
 	va_list args;
@@ -302,6 +303,13 @@ void lsd_xload_dbg(const char *fmt, ...)
 	plsd_printbuffer = plsd_printbuffer + i;
 	va_end (args);
 }
+
+#else
+void lsd_xload_dbg(const char *fmt, ...)
+{
+
+}	
+#endif
 #endif
 
 
