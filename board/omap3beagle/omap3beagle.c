@@ -275,6 +275,8 @@ int beagle_revision(void)
 	omap_free_gpio(171);
 	omap_free_gpio(172);
 	omap_free_gpio(173);
+	// nmy add
+	rev = REVISION_XM;
 
 	return rev;
 }
@@ -731,6 +733,25 @@ static void iva_init_36xx(u32 sil_index, u32 clk_index)
 	wait_on_value(BIT0, 1, CM_IDLEST_PLL_IVA2, LDELAY);
 }
 
+void printf_info(void)
+{
+	u32 osc_clk=0, sys_clkin_sel;
+	u32 clk_index, sil_index;
+	osc_clk = get_osc_clk_speed();
+	printf("[LSD DEBUG]osc_clk = get_osc_clk_speed()=%d\n",osc_clk);
+	get_sys_clkin_sel(osc_clk, &sys_clkin_sel);
+	printf("[LSD DEBUG]sys_clkin_sel=%d\n",sys_clkin_sel);
+
+	if((is_cpu_family() != CPU_OMAP36XX) && (sys_clkin_sel > 2)) {
+		//sr32(PRM_CLKSRC_CTRL, 6, 2, 2);/* input clock divider */
+		clk_index = sys_clkin_sel/2;
+	} else {
+		//sr32(PRM_CLKSRC_CTRL, 6, 2, 1);/* input clock divider */
+		clk_index = sys_clkin_sel;
+	}
+	printf("[LSD DEBUG]clk_index =%d\n",clk_index);
+}
+
 /******************************************************************************
  * prcm_init() - inits clocks for PRCM as defined in clocks.h
  *   -- called from SRAM, or Flash (using temp SRAM stack).
@@ -763,7 +784,7 @@ void prcm_init(void)
 		clk_index = sys_clkin_sel;
 	}
 
-	if (is_cpu_family() == CPU_OMAP36XX) {
+	if (is_cpu_family() == CPU_OMAP36XX) {   // use this init function
 		dpll3_init_36xx(0, clk_index);
 		dpll4_init_36xx(0, clk_index);
 		mpu_init_36xx(0, clk_index);
@@ -880,7 +901,8 @@ void s_init(void)
 int misc_init_r(void)
 {
 	int rev;
-
+	u32 tmp;
+	printf("[LSD DEBUG]yuge beagle\n");
 	rev = beagle_revision();
 	switch (rev) {
 	case REVISION_AXBX:
@@ -901,6 +923,24 @@ int misc_init_r(void)
 	default:
 		printf("Beagle unknown 0x%02x\n", rev);
 	}
+
+	tmp = is_cpu_family();
+	printf("[LSD DEBUG]is_cpu_family()=0x%08x\n",tmp);
+	switch (tmp) {
+	case CPU_OMAP34XX:
+		printf("[LSD DEBUG]cpu_family is CPU_OMAP34XX\n");
+		break;
+	case CPU_AM35XX:
+		printf("[LSD DEBUG]cpu_family is CPU_AM35XX\n");
+		break;
+	case CPU_OMAP36XX:
+		printf("[LSD DEBUG]cpu_family is CPU_OMAP36XX\n");
+		break;
+	default:
+		printf("[LSD DEBUG]is_cpu_family() unknown 0x%02x\n", tmp);
+	}
+
+	printf_info();
 
 	return 0;
 }

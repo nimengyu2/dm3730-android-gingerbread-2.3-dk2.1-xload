@@ -40,6 +40,9 @@
 #
 include/config.mk
 include/config.h
+include/asm/arch
+include/asm/proc
+
 
 #
 # cscope files
