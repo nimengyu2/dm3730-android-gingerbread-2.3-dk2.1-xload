@@ -807,14 +807,15 @@ void prcm_init(void)
 {
 	u32 osc_clk=0, sys_clkin_sel;
 	u32 clk_index, sil_index;
-	lsd_xload_dbg("test xload1\n");
-	lsd_xload_dbg("test xload2\n");
+	lsd_xload_dbg("enter prcm_init\n");
 
 	/* Gauge the input clock speed and find out the sys_clkin_sel
 	 * value corresponding to the input clock.
 	 */
 	osc_clk = get_osc_clk_speed();
+	lsd_xload_dbg("osc_clk=%d\n",osc_clk);
 	get_sys_clkin_sel(osc_clk, &sys_clkin_sel);
+	lsd_xload_dbg("sys_clkin_sel=%d\n",sys_clkin_sel);
 
 	sr32(PRM_CLKSEL, 0, 3, sys_clkin_sel); /* set input crystal speed */
 
@@ -828,18 +829,22 @@ void prcm_init(void)
 	if((is_cpu_family() != CPU_OMAP36XX) && (sys_clkin_sel > 2)) {
 		sr32(PRM_CLKSRC_CTRL, 6, 2, 2);/* input clock divider */
 		clk_index = sys_clkin_sel/2;
+		lsd_xload_dbg("cpu family is not 36xx,clk_index=%d\n",clk_index);
 	} else {
 		sr32(PRM_CLKSRC_CTRL, 6, 2, 1);/* input clock divider */
 		clk_index = sys_clkin_sel;
+		lsd_xload_dbg("cpu family is 36xx,clk_index=%d\n",clk_index);
 	}
 
 	if (is_cpu_family() == CPU_OMAP36XX) {   // use this init function
+		lsd_xload_dbg("cpu family is 36xx,start set mpu iva pll3 pll4\n");
 		dpll3_init_36xx(0, clk_index);
 		dpll4_init_36xx(0, clk_index);
 		mpu_init_36xx(0, clk_index);
 		iva_init_36xx(0, clk_index);
 	} else {
 		sil_index = get_cpu_rev() - 1;
+		lsd_xload_dbg("cpu family is not 36xx,start set mpu iva pll3 pll4\n");
 
 		/* The DPLL tables are defined according to sysclk value and
 		 * silicon revision. The clk_index value will be used to get
@@ -952,9 +957,7 @@ int misc_init_r(void)
 {
 	int rev;
 	u32 tmp;
-	lsd_xload_dbg("test xload3\n");
-	lsd_xload_dbg("test xload4\n");
-	lsd_xload_dbg("test rev=%d\n",100);
+
 	//lsd_xload_dbg_flush();
 	printf("%s",lsd_printbuffer);
 
