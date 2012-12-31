@@ -705,12 +705,17 @@ static void dpll4_init_36xx(u32 sil_index, u32 clk_index)
 static void mpu_init_36xx(u32 sil_index, u32 clk_index)
 {
 	dpll_param *ptr;
-
+	lsd_xload_dbg("enter mpu_init_36xx\n");
 	/* Getting the base address to MPU DPLL param table*/
 	ptr = (dpll_param *)get_36x_mpu_dpll_param();
+	lsd_xload_dbg("get_36x_mpu_dpll_param()=0x%08x\n",ptr);
 
 	/* Moving it to the right sysclk and ES rev base */
 	ptr = ptr + (2*clk_index) + sil_index;
+	lsd_xload_dbg("ptr + (2*clk_index) + sil_index=0x%08x\n",ptr);	
+	lsd_xload_dbg("ptr->m2=%d\n",ptr->m2);
+	lsd_xload_dbg("ptr->m=%d\n",ptr->m);
+	lsd_xload_dbg("ptr->n=%d\n",ptr->n);	
 
 	/* MPU DPLL (unlocked already) */
 	/* M2 (MPU_DPLL_CLKOUT_DIV) : CM_CLKSEL2_PLL_MPU[0:4] */
@@ -959,7 +964,7 @@ int misc_init_r(void)
 	u32 tmp;
 
 	//lsd_xload_dbg_flush();
-	printf("%s",lsd_printbuffer);
+	serial_puts(lsd_printbuffer);
 
 	lsd_printf_dbg("[LSD DEBUG]yuge beagle\n");
 	rev = beagle_revision();
