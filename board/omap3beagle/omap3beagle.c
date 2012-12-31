@@ -91,6 +91,30 @@ extern block_dev_desc_t *mmc_get_dev(int dev);
 #define __raw_readw(a)		(*(volatile unsigned short *)(a))
 #define __raw_writew(v, a)	(*(volatile unsigned short *)(a) = (v))
 
+
+#if 0
+char lsd_printbuffer[256]={"first string\n"};
+unsigned char* plsd_printbuffer = lsd_printbuffer;
+void lsd_xload_dbg(char*str)
+{
+	uint i,j;
+	char *pstr;
+	pstr = str;	
+	while(*pstr)
+	{
+		i++;
+		pstr++;
+	}
+	pstr = str;
+	for(j=0;j<i;j++)
+	{
+		*plsd_printbuffer = *pstr;
+		pstr++;
+		plsd_printbuffer++;
+	}
+}
+#endif
+
 /*******************************************************
  * Routine: delay
  * Description: spinning delay to use before udelay works
@@ -691,12 +715,15 @@ static void mpu_init_36xx(u32 sil_index, u32 clk_index)
 	/* MPU DPLL (unlocked already) */
 	/* M2 (MPU_DPLL_CLKOUT_DIV) : CM_CLKSEL2_PLL_MPU[0:4] */
 	sr32(CM_CLKSEL2_PLL_MPU, 0, 5, ptr->m2);
+	//sr32(CM_CLKSEL2_PLL_MPU, 0, 5, 1);
 
 	/* M (MPU_DPLL_MULT) : CM_CLKSEL2_PLL_MPU[8:18] */
 	sr32(CM_CLKSEL1_PLL_MPU, 8, 11, ptr->m);
+	//sr32(CM_CLKSEL1_PLL_MPU, 8, 11, 500);
 
 	/* N (MPU_DPLL_DIV) : CM_CLKSEL2_PLL_MPU[0:6] */
 	sr32(CM_CLKSEL1_PLL_MPU, 0, 7, ptr->n);
+	//sr32(CM_CLKSEL1_PLL_MPU, 0, 7, 12);
 
 	/* LOCK MODE (EN_MPU_DPLL) : CM_CLKEN_PLL_IVA2[0:2] */
 	sr32(CM_CLKEN_PLL_MPU, 0, 3, PLL_LOCK);
@@ -750,6 +777,26 @@ void printf_info(void)
 		clk_index = sys_clkin_sel;
 	}
 	printf("[LSD DEBUG]clk_index =%d\n",clk_index);
+
+
+	dpll_param *ptr;
+
+	/* Getting the base address to MPU DPLL param table*/
+	ptr = (dpll_param *)get_36x_mpu_dpll_param();
+
+	/* Moving it to the right sysclk and ES rev base */
+	ptr = ptr + (2*3) + 0;
+	printf("[LSD DEBUG]ptr->m2=%d\n",ptr->m2);
+	printf("[LSD DEBUG]ptr->m=%d\n",ptr->m);
+	printf("[LSD DEBUG]ptr->n=%d\n",ptr->n);
+
+	u32 reg_tmp;
+	reg_tmp = __raw_readl(CM_CLKSEL2_PLL_MPU);
+	printf("[LSD DEBUG]reg CM_CLKSEL2_PLL_MPU=0x%08x\n",reg_tmp);
+	reg_tmp = __raw_readl(CM_CLKSEL1_PLL_MPU);
+	printf("[LSD DEBUG]reg CM_CLKSEL1_PLL_MPU=0x%08x\n",reg_tmp);
+	reg_tmp = __raw_readl(CM_CLKEN_PLL_MPU);
+	printf("[LSD DEBUG]reg CM_CLKEN_PLL_MPU=0x%08x\n",reg_tmp);
 }
 
 /******************************************************************************
@@ -760,6 +807,8 @@ void prcm_init(void)
 {
 	u32 osc_clk=0, sys_clkin_sel;
 	u32 clk_index, sil_index;
+	lsd_xload_dbg("test xload1\n");
+	lsd_xload_dbg("test xload2\n");
 
 	/* Gauge the input clock speed and find out the sys_clkin_sel
 	 * value corresponding to the input clock.
@@ -898,10 +947,17 @@ void s_init(void)
  * Routine: misc_init_r
  * Description: Init ethernet (done here so udelay works)
  ********************************************************/
+extern char lsd_printbuffer[256];
 int misc_init_r(void)
 {
 	int rev;
 	u32 tmp;
+	lsd_xload_dbg("test xload3\n");
+	lsd_xload_dbg("test xload4\n");
+	lsd_xload_dbg("test rev=%d\n",100);
+	//lsd_xload_dbg_flush();
+	printf("%s\n",lsd_printbuffer);
+
 	printf("[LSD DEBUG]yuge beagle\n");
 	rev = beagle_revision();
 	switch (rev) {

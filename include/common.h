@@ -99,6 +99,7 @@ int	serial_tstc   (void);
 
 /* lib/printf.c */
 void	serial_printf (const char *fmt, ...);
+void lsd_xload_dbg(const char *fmt, ...);
 #else
 #define serial_init()
 #define serial_setbrg()

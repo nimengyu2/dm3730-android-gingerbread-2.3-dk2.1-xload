@@ -318,7 +318,8 @@ core_dpll_param:
 
 /* 26MHz */
 /* ES1 */
-.word M_26_ES1,N_26_ES1,FSL_26_ES1,M2_26_ES1
+//.word M_26_ES1,N_26_ES1,FSL_26_ES1,M2_26_ES1  // source
+.word 0x1B2,N_26_ES1,FSL_26_ES1,M2_26_ES1 
 /* ES2 */
 .word M_26,N_26,FSEL_26,M2_26
 /* 3410 */
@@ -349,7 +350,8 @@ per_dpll_param:
 .word 0xE1,0x09,0x07,0x09
 
 /* 26MHz */
-.word 0xD8,0x0C,0x07,0x09
+//.word 0xD8,0x0C,0x07,0x09  source
+.word 0x1B0,0x0C,0x07,0x09
 
 /* 38.4MHz */
 .word 0xE1,0x13,0x07,0x09
@@ -365,10 +367,14 @@ get_per_dpll_param:
  * (Populated for 13MHz only)
  */
 mpu_36x_dpll_param:
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
-.word 300, 12, 0, 1
+//.word 300, 12, 0, 1
+//.word 300, 12, 0, 1
+//.word 300, 12, 0, 1
+//.word 300, 12, 0, 1
+.word 500, 12, 0, 1
+.word 500, 12, 0, 1
+.word 500, 12, 0, 1
+.word 500, 12, 0, 1
 
 iva_36x_dpll_param:
 .word 10, 0, 0, 1
@@ -377,6 +383,10 @@ iva_36x_dpll_param:
 .word 10, 0, 0, 1
 
 core_36x_dpll_param:
+//.word 200, 12, 0, 1
+//.word 200, 12, 0, 1
+//.word 200, 12, 0, 1
+//.word 200, 12, 0, 1
 .word 200, 12, 0, 1
 .word 200, 12, 0, 1
 .word 200, 12, 0, 1

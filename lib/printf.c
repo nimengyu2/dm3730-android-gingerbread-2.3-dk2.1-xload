@@ -284,6 +284,27 @@ static int vsprintf(char *buf, const char *fmt, va_list args)
 	return str-buf;
 }
 
+
+#if 1
+char lsd_printbuffer[256]={"first string\n"};
+unsigned char* plsd_printbuffer = lsd_printbuffer;
+void lsd_xload_dbg(const char *fmt, ...)
+{
+	va_list args;
+	uint i;
+
+	va_start (args, fmt);
+
+	/* For this to work, printbuffer must be larger than
+	 * anything we ever want to print.
+	 */
+	i = vsprintf (plsd_printbuffer, fmt, args);
+	plsd_printbuffer = plsd_printbuffer + i;
+	va_end (args);
+}
+#endif
+
+
 void serial_printf (const char *fmt, ...)
 {
 	va_list args;
