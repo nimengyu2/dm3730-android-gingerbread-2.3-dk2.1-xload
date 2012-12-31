@@ -711,7 +711,9 @@ static void mpu_init_36xx(u32 sil_index, u32 clk_index)
 	lsd_xload_dbg("get_36x_mpu_dpll_param()=0x%08x\n",ptr);
 
 	/* Moving it to the right sysclk and ES rev base */
+	//ptr = ptr + (2*clk_index) + sil_index;
 	ptr = ptr + (2*clk_index) + sil_index;
+
 	lsd_xload_dbg("ptr + (2*clk_index) + sil_index=0x%08x\n",ptr);	
 	lsd_xload_dbg("ptr->m2=%d\n",ptr->m2);
 	lsd_xload_dbg("ptr->m=%d\n",ptr->m);
@@ -738,12 +740,21 @@ static void mpu_init_36xx(u32 sil_index, u32 clk_index)
 static void iva_init_36xx(u32 sil_index, u32 clk_index)
 {
 	dpll_param *ptr;
+	lsd_xload_dbg("enter func iva_init_36xx\n");
 
 	/* Getting the base address to IVA DPLL param table*/
 	ptr = (dpll_param *)get_36x_iva_dpll_param();
+	lsd_xload_dbg("get_36x_iva_dpll_param()=0x%08x\n",ptr);
 
 	/* Moving it to the right sysclk and ES rev base */
+	//ptr = ptr + (2*clk_index) + sil_index;
 	ptr = ptr + (2*clk_index) + sil_index;
+
+	lsd_xload_dbg("clk_index=%d,sil_index=%d\n",clk_index,sil_index);
+	lsd_xload_dbg("ptr + (2*clk_index) + sil_index=0x%08x\n",ptr);
+	lsd_xload_dbg("ptr->m2=%d\n",ptr->m2);
+	lsd_xload_dbg("ptr->m=%d\n",ptr->m);
+	lsd_xload_dbg("ptr->n=%d\n",ptr->n);
 
 	/* IVA DPLL */
 	/* EN_IVA2_DPLL : CM_CLKEN_PLL_IVA2[0:2] */
