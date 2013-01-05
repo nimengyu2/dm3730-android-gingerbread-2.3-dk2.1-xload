@@ -712,7 +712,7 @@ static void mpu_init_36xx(u32 sil_index, u32 clk_index)
 
 	/* Moving it to the right sysclk and ES rev base */
 	//ptr = ptr + (2*clk_index) + sil_index;
-	ptr = ptr + (2*clk_index) + sil_index;
+	ptr = ptr + (1*clk_index) + sil_index;
 
 	lsd_xload_dbg("ptr + (2*clk_index) + sil_index=0x%08x\n",ptr);	
 	lsd_xload_dbg("ptr->m2=%d\n",ptr->m2);
@@ -748,7 +748,7 @@ static void iva_init_36xx(u32 sil_index, u32 clk_index)
 
 	/* Moving it to the right sysclk and ES rev base */
 	//ptr = ptr + (2*clk_index) + sil_index;
-	ptr = ptr + (2*clk_index) + sil_index;
+	ptr = ptr + (1*clk_index) + sil_index;
 
 	lsd_xload_dbg("clk_index=%d,sil_index=%d\n",clk_index,sil_index);
 	lsd_xload_dbg("ptr + (2*clk_index) + sil_index=0x%08x\n",ptr);
